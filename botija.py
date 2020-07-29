@@ -31,7 +31,7 @@ async def hello_chat(ctx):
     await ctx.send(f'Hello {ctx.message.author.name}!')
 
 @bot.command(name="RemindMe", help="Creates a reminder. Syntax: !RemindMe [int] [m|h|d|M|y] \"Message to record\"")
-async def remind_me(ctx, amount: int, time, message)
+async def remind_me(ctx, amount: int, time, message):
     current_time=datetime.now()
     if time == "m":
         reminder_time=current_time + timedelta(minutes=amount)
