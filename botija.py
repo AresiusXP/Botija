@@ -1,5 +1,5 @@
 import os
-
+import discord
 from discord.ext import commands
 from dotenv import load_dotenv
 
@@ -19,12 +19,13 @@ async def on_ready():
         f'{guild.name}(id: {guild.id})'
     )
 
-@bot.event
-async def on_message(message):
-    if message.author == bot.user:
-        return
+# @bot.event
+# async def on_message(message):
+#     if message.author == bot.user:
+#         return
 
-    if message.content.contains()
-    await message.channel.send(f'You\'ve just said the following: \"{message.content}\"')
+@bot.command(name="hello", help="It says hello back!")
+async def hello_chat(ctx):
+    await ctx.send(f'Hello {ctx.message.author.name}!')
 
-client.run(TOKEN)
+bot.run(TOKEN)
