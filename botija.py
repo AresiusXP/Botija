@@ -6,9 +6,9 @@ import asyncio
 from datetime import datetime,timedelta 
 from dateutil.relativedelta import relativedelta
 from discord.ext import commands
-from dotenv import load_dotenv
+#from dotenv import load_dotenv
 
-load_dotenv()
+#load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 
 def get_next_alarm():
@@ -63,7 +63,7 @@ async def remind_me(ctx, amount: int, time, message):
         params[mapping[time]] = amount
         reminder_time = current_time + relativedelta(**params)
     else:
-        await ctx.send("Wrong syntax. Please check `!help RemindMe`")
+        await ctx.send("Wrong syntax. Please check `!help RemindMe`.")
 
     if reminder_time != "":
         print(f"New reminder created - Time: {reminder_time} - Message: {message} - Channel: {ctx.channel} - Channel ID: {ctx.channel.id} - Guild: {ctx.guild.name} - Author: {ctx.message.author.id}")
