@@ -49,20 +49,19 @@ async def hello_chat(ctx):
 @bot.command(name="RemindMe", help="Creates a reminder. Syntax: !RemindMe [int] [m|h|d|M|y] \"Message to record\"")
 async def remind_me(ctx, amount: int, time, message):
     current_time=datetime.now()
-    reminder_time=""
-    if time == "m":
-        reminder_time=current_time + timedelta(minutes=amount)
-    elif time == "h":
-        reminder_time=current_time + timedelta(hours=amount)
-    elif time == "d":
-        reminder_time=current_time + timedelta(days=amount)
-    elif time == "M":
-        reminder_time=current_time + relativedelta(months=+amount)
-    elif time == "y":
-        reminder_time=current_time + relativedelta(years=+amount)
-    # Temporary for seconds
-    elif time == "s":
-        reminder_time=current_time + relativedelta(seconds=+amount)
+    mapping = {
+        "s": "seconds",
+        "m": "minutes",
+        "h": "hours"
+        "d": "days",
+        "M": "months",
+        "y": "years"
+    }
+
+    params = {}
+    if time in mapping:
+        params[mapping[time]] = amount
+        reminder_time = current_time + relativedelta(**params)
     else:
         await ctx.send("Wrong syntax. Please check `!help RemindMe`")
 
