@@ -33,17 +33,23 @@ async def hello_chat(ctx):
 @bot.command(name="RemindMe", help="Creates a reminder. Syntax: !RemindMe [int] [m|h|d|M|y] \"Message to record\"")
 async def remind_me(ctx, amount: int, time, message):
     current_time=datetime.now()
+    reminder_time=""
     if time == "m":
         reminder_time=current_time + timedelta(minutes=amount)
-    if time == "h":
+    elif time == "h":
         reminder_time=current_time + timedelta(hours=amount)
-    if time == "d":
+    elif time == "d":
         reminder_time=current_time + timedelta(days=amount)
-    if time == "M":
+    elif time == "M":
         reminder_time=current_time + relativedelta(months=+amount)
-    if time == "y":
+    elif time == "y":
         reminder_time=current_time + relativedelta(years=+amount)
+    else:
+        await ctx.send("Wrong syntax. Please check `!help RemindMe`")
 
-    await ctx.send("Your reminders has been set for {reminder_time} with message \"{message}\"")
+    if reminder_time != "":
+        print(f"New reminder created - Time: {reminder_time} - Message: {message}")
+        reminder_format=reminder_time.strftime("%b %d %Y %H:%M")
+        await ctx.send(f"Your reminder has been set for {reminder_format} with message \"{message}\"")
 
 bot.run(TOKEN)
