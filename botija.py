@@ -52,7 +52,7 @@ async def remind_me(ctx, amount: int, time, message):
     mapping = {
         "s": "seconds",
         "m": "minutes",
-        "h": "hours"
+        "h": "hours",
         "d": "days",
         "M": "months",
         "y": "years"
