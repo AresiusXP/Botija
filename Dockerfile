@@ -18,8 +18,7 @@ RUN curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - && \
 RUN mkdir /app
 WORKDIR /app
 
-COPY botija.py /app/botija.py
-COPY sql.py /app/sql.py
+COPY *.py /app/
 COPY requirements.txt /app
 
 # Installing pip dependencies

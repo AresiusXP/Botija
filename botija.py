@@ -7,10 +7,14 @@ import alarm
 from datetime import datetime,timedelta 
 from dateutil.relativedelta import relativedelta
 from discord.ext import commands
-#from dotenv import load_dotenv
+from dotenv import load_dotenv
 
-#load_dotenv()
+load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
+SQL_SERVER=os.getenv('SQL_SERVER')
+SQL_DB=os.getenv('SQL_DB')
+SQL_USER=os.getenv('SQL_USER')
+SQL_PASS=os.getenv('SQL_PASS')
 
 def get_next_alarm():
     # to do:
