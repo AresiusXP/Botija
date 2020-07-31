@@ -1,6 +1,9 @@
 import os
 import pyodbc
+from datetime import datetime,timedelta 
+import alarm
 from dotenv import load_dotenv
+import time
 
 # Gather parameters
 load_dotenv()
@@ -18,7 +21,7 @@ def sql_connect():
 def create_table():
     cursor, sql_client = sql_connect()
     try:
-        cursor.execute("""CREATE TABLE [dbo].[alarms]([id] [int] NOT NULL,[timestamp] [time](7) NOT NULL,[reminder_time] [time](7) NOT NULL,[message] [varchar](200) NOT NULL,[channel] [varchar](20) NOT NULL,[channel_id] [int] NOT NULL,[guild_name] [varchar](30) NOT NULL,[author_id] [int] NOT NULL) ON [PRIMARY]""")
+        cursor.execute("""CREATE TABLE [dbo].[alarms]([id] [int] NOT NULL IDENTITY(1,1) PRIMARY KEY,[timestamp] [datetime] NOT NULL,[reminder_time] [datetime] NOT NULL,[message] [varchar](200) NOT NULL,[channel] [varchar](20) NOT NULL,[channel_id] [bigint] NOT NULL,[guild_name] [varchar](30) NOT NULL,[author_id] [bigint] NOT NULL, [author_name] [varchar](30)) ON [PRIMARY]""")
         sql_client.commit()
     except pyodbc.Error as msg:
         print(f"Error in command: {msg}")
@@ -35,3 +38,21 @@ def alarm_table_exists():
     
     cursor.close()
     sql_client.close()
+
+def create_alarm(new_alarm: alarm):
+    current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    reminder_time = new_alarm.reminder_time.strftime('%Y-%m-%d %H:%M:%S')
+    cursor, sql_client = sql_connect()
+
+    query_template =  """INSERT INTO alarms (timestamp, reminder_time, message, channel, channel_id, guild_name, author_id, author_name) VALUES (\'{0}\',\'{1}\',\'{2}\',\'{3}\',{4},\'{5}\',{6},\'{7}\')"""
+    
+    query = query_template.format(current_time, reminder_time, new_alarm.message, new_alarm.channel, new_alarm.channel_id, new_alarm.guild_name, new_alarm.author_id, new_alarm.author_name)
+
+    try:
+        cursor.execute(query)
+        sql_client.commit()
+    except pyodbc.Error as msg:
+        print(f"Error creating alarm: {msg}")
+    finally:
+        cursor.close()
+        sql_client.close()
