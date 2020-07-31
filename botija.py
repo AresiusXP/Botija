@@ -3,6 +3,7 @@ import os
 import discord
 import sql
 import asyncio
+import alarm
 from datetime import datetime,timedelta 
 from dateutil.relativedelta import relativedelta
 from discord.ext import commands
@@ -73,5 +74,8 @@ async def remind_me(ctx, amount: int, time, message):
         
         reminder_format=reminder_time.strftime("%b %d %Y %H:%M")
         await ctx.send(f"Your reminder has been set for {reminder_format} with message \"{message}\"")
+
+if not sql.alarm_table_exists():
+    sql.create_table
 
 bot.run(TOKEN)
