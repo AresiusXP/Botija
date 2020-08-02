@@ -28,7 +28,7 @@ async def send_alarm_message(alarm_channel_id, alarm_author_id, alarm_message):
 async def on_ready():
     # Setup alarm table
     if not sql.alarm_table_exists():
-        sql.create_table
+        sql.create_table()
 
     # Get next alarm
     global next_alarm

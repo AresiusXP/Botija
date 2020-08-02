@@ -1,9 +1,9 @@
 import os
 import pyodbc
-from datetime import datetime,timedelta 
 import alarm
 from dotenv import load_dotenv
 import time
+from datetime import datetime,timedelta 
 
 load_dotenv()
 SQL_SERVER=os.getenv('SQL_SERVER')
@@ -34,7 +34,6 @@ def alarm_table_exists():
         return True
     else:
         return False
-    
     cursor.close()
     sql_client.close()
 
@@ -42,11 +41,8 @@ def create_alarm(new_alarm: alarm.Alarm):
     current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     reminder_time = new_alarm.reminder_time.strftime('%Y-%m-%d %H:%M:%S')
     cursor, sql_client = sql_connect()
-
     query_template =  """INSERT INTO alarms (timestamp, reminder_time, message, channel, channel_id, guild_name, author_id, author_name) VALUES (\'{0}\',\'{1}\',\'{2}\',\'{3}\',{4},\'{5}\',{6},\'{7}\')"""
-
     query = query_template.format(current_time, reminder_time, new_alarm.message, new_alarm.channel, new_alarm.channel_id, new_alarm.guild_name.replace("\'"," "), new_alarm.author_id, new_alarm.author_name)
-
     try:
         cursor.execute(query)
         sql_client.commit()
@@ -59,9 +55,7 @@ def create_alarm(new_alarm: alarm.Alarm):
 def get_next_alarm():
     cursor, sql_client = sql_connect()
     current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    
     query = "SELECT TOP 1 * FROM alarms WHERE alarms.reminder_time > \'{0}\' ORDER BY alarms.reminder_time ASC".format(current_time)
-
     try:
         cursor.execute(query)
         row = cursor.fetchone()
@@ -71,7 +65,6 @@ def get_next_alarm():
     finally:
         cursor.close()
         sql_client.close()
-
     return next_alarm
 
 def test_sql_connection():
