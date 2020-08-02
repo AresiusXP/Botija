@@ -59,7 +59,10 @@ def get_next_alarm():
     try:
         cursor.execute(query)
         row = cursor.fetchone()
-        next_alarm = alarm.Alarm(row[2], row[3], row[4], row[5], row[6], row[7], row[8])
+        if row:
+            next_alarm = alarm.Alarm(row[2], row[3], row[4], row[5], row[6], row[7], row[8])
+        else:
+            next_alarm = None
     except pyodbc.Error as msg:
         print(f"Error getting nest alarm: {msg}")
     finally:

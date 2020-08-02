@@ -12,12 +12,28 @@ from dotenv import load_dotenv
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 bot = commands.Bot(command_prefix='!')
-global next_alarm
+next_alarm = ""
 
 def trigger_alarm(*args):
+    global next_alarm
     trigger_alarm = next_alarm
     print("Trigger Alarm Time: {0}".format(trigger_alarm.reminder_time.strftime("%b %d %Y %H:%M:%S")))
     asyncio.ensure_future(send_alarm_message(trigger_alarm.channel_id, trigger_alarm.author_id, trigger_alarm.message))
+    set_signal_next_alarm()
+
+def set_signal_next_alarm():
+    global next_alarm
+    next_alarm = sql.get_next_alarm()
+    if next_alarm:
+        # Setup alarm signal
+        signal.signal(signal.SIGALRM, trigger_alarm)
+        signal.alarm(int((next_alarm.reminder_time - datetime.now()).total_seconds()))
+        
+        # Print next alarm
+        print("Next alarm: {0} by {1}".format(next_alarm.reminder_time.strftime("%b %d %Y %H:%M"), next_alarm.author_name))
+    else:
+        print("No alarms next.")
+
 
 async def send_alarm_message(alarm_channel_id, alarm_author_id, alarm_message):
     channel = bot.get_channel(alarm_channel_id)
@@ -26,27 +42,20 @@ async def send_alarm_message(alarm_channel_id, alarm_author_id, alarm_message):
 
 @bot.event
 async def on_ready():
+    guild = discord.utils.get(bot.guilds)
+    print(
+        f'{bot.user.name} has connected to Discord!\n'
+        f'{bot.user.name} is connected to the following guild:\n'
+        f'{guild.name}(id: {guild.id})'
+    )
+
     # Setup alarm table
     if not sql.alarm_table_exists():
+        print("No database found. Creating...")
         sql.create_table()
 
     # Get next alarm
-    global next_alarm
-    next_alarm = sql.get_next_alarm()
-
-    # Setup alarm signal
-    signal.signal(signal.SIGALRM, trigger_alarm)
-    signal.alarm(int((next_alarm.reminder_time - datetime.now()).total_seconds()))
-
-    print(f'{bot.user.name} has connected to Discord!')
-    
-    # for guild in client.guilds:
-    guild = discord.utils.get(bot.guilds)
-    print(
-        f'{bot.user.name} is connected to the following guild:\n'
-        f'{guild.name}(id: {guild.id})\n'
-        "Next alarm: {0} by {1}\n".format(next_alarm.reminder_time.strftime("%b %d %Y %H:%M"), next_alarm.author_name)
-    )
+    set_signal_next_alarm()
 
 
 @bot.command(name="hello", help="It says hello back!")
@@ -87,6 +96,7 @@ async def remind_me(ctx, amount: int, time, message):
         sql.create_alarm(new_alarm)
 
         # Renew signal
+        global next_alarm
         next_alarm = sql.get_next_alarm()
         print("Next alarm: {0} by {1}".format(next_alarm.reminder_time.strftime("%b %d %Y %H:%M"), next_alarm.author_name))
         
