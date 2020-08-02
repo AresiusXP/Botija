@@ -14,7 +14,6 @@ TOKEN = os.getenv('DISCORD_TOKEN')
 bot = commands.Bot(command_prefix='!')
 global next_alarm
 
-# TO DO: Fix query - Get alarm datetime.now()
 def trigger_alarm(*args):
     trigger_alarm = next_alarm
     print("Trigger Alarm Time: {0}".format(trigger_alarm.reminder_time.strftime("%b %d %Y %H:%M:%S")))
