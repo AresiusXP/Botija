@@ -36,14 +36,11 @@ jobs:
         # Comma-delimited list of tags. These will be added to the registry/repository to form the image's tags
         tags: latest,${{github.run_id}} # optional
     
-    - name: Azure Login
-      uses: Azure/login@v1
-      with:
-        # Paste output of `az ad sp create-for-rbac` as value of secret variable: AZURE_CREDENTIALS
-        creds: ${{secrets.AZURE_CREDENTIALS}}
-    
+  
     - name: Azure CLI Action
       uses: Azure/cli@v1.0.0
       with:
         # Specify the script here
-        inlineScript: az container restart -n botija -g BotijaRG
+        inlineScript: |
+          az login --service-principal -u http://BotijaSPN -p ${{secrets.SPNSECRET}} --tenant 5b973f99-77df-4beb-b27d-aa0c70b8482c
+          az container restart -n botija -g BotijaRG
