@@ -38,7 +38,7 @@ def set_signal_next_alarm():
 async def send_alarm_message(alarm_channel_id, alarm_author_id, alarm_message):
     channel = bot.get_channel(alarm_channel_id)
     member = bot.get_user(alarm_author_id)
-    await channel.send(f"{member.mention} - Reminder: {alarm_message}")
+    await channel.send(f"{member.mention} - Reminder: \"{alarm_message}\"")
 
 @bot.event
 async def on_ready():
@@ -64,7 +64,7 @@ async def hello_chat(ctx):
     print(f"{ctx.message.author.name} just said hello to me.")
 
 @bot.command(name="RemindMe", help="Creates a reminder. Syntax: !RemindMe [int] [m|h|d|M|y] \"Message to record\"")
-async def remind_me(ctx, amount: int, time, message):
+async def remind_me(ctx, amount: int, time, *message):
     current_time=datetime.now()
     mapping = {
         "s": "seconds",
@@ -82,29 +82,26 @@ async def remind_me(ctx, amount: int, time, message):
     else:
         await ctx.send("Wrong syntax. Please check `!help RemindMe`.")
 
+    formatted_message = " ".join(message)
+
     if reminder_time != "":
         print(f"""New reminder created 
                 Time: {reminder_time}
-                Message: {message}
+                Message: {formatted_message}
                 Channel: {ctx.channel.name}
                 Channel ID: {ctx.channel.id}
                 Guild: {ctx.guild.name}
                 Author: {ctx.message.author.name}""")
         
         # Create alarm object and insert in DB
-        new_alarm = alarm.Alarm(reminder_time, message, ctx.channel.name, ctx.channel.id, ctx.guild.name, ctx.message.author.id, ctx.message.author.name)
+        new_alarm = alarm.Alarm(reminder_time, formatted_message, ctx.channel.name, ctx.channel.id, ctx.guild.name, ctx.message.author.id, ctx.message.author.name)
         sql.create_alarm(new_alarm)
 
         # Renew signal
-        global next_alarm
-        next_alarm = sql.get_next_alarm()
-        print("Next alarm: {0} by {1}".format(next_alarm.reminder_time.strftime("%b %d %Y %H:%M"), next_alarm.author_name))
-        
-        signal.signal(signal.SIGALRM, trigger_alarm)
-        signal.alarm(int((next_alarm.reminder_time - datetime.now()).total_seconds()))
+        set_signal_next_alarm()
         
         reminder_format=reminder_time.strftime("%b %d %Y %H:%M")
-        await ctx.send(f"Your reminder has been set for {reminder_format} with message \"{message}\"")
+        await ctx.send(f"Your reminder has been set for {reminder_format} with message \"{formatted_message}\"")
 
 if sql.test_sql_connection() == "success":
     bot.run(TOKEN)
