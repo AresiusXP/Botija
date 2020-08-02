@@ -73,3 +73,14 @@ def get_next_alarm():
         sql_client.close()
 
     return next_alarm
+
+def test_sql_connection():
+    try:
+        cursor, sql_client = sql_connect()
+        return "success"
+    except pyodbc.Error as msg:
+        print(f"Error getting nest alarm: {msg}")
+        raise
+    finally:
+        cursor.close()
+        sql_client.close()

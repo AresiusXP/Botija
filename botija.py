@@ -95,5 +95,7 @@ async def remind_me(ctx, amount: int, time, message):
         reminder_format=reminder_time.strftime("%b %d %Y %H:%M")
         await ctx.send(f"Your reminder has been set for {reminder_format} with message \"{message}\"")
 
-
-bot.run(TOKEN)
+if sql.test_sql_connection() == "success":
+    bot.run(TOKEN)
+else:
+    print("Connection to SQL Failed.")
