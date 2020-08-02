@@ -37,13 +37,13 @@ jobs:
         tags: latest,${{github.run_id}} # optional
     
     - name: Azure Login
-        uses: Azure/login@v1
-        with:
-          # Paste output of `az ad sp create-for-rbac` as value of secret variable: AZURE_CREDENTIALS
-          creds: ${{secrets.AZURE_CREDENTIALS}}
+      uses: Azure/login@v1
+      with:
+        # Paste output of `az ad sp create-for-rbac` as value of secret variable: AZURE_CREDENTIALS
+        creds: ${{secrets.AZURE_CREDENTIALS}}
     
     - name: Azure CLI Action
-        uses: Azure/cli@v1.0.0
-        with:
-          # Specify the script here
-          inlineScript: az container restart -n botija -g BotijaRG
+      uses: Azure/cli@v1.0.0
+      with:
+        # Specify the script here
+        inlineScript: az container restart -n botija -g BotijaRG
