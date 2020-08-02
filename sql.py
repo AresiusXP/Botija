@@ -5,7 +5,6 @@ import alarm
 from dotenv import load_dotenv
 import time
 
-# Gather parameters
 load_dotenv()
 SQL_SERVER=os.getenv('SQL_SERVER')
 SQL_DB=os.getenv('SQL_DB')
@@ -39,14 +38,14 @@ def alarm_table_exists():
     cursor.close()
     sql_client.close()
 
-def create_alarm(new_alarm: alarm):
+def create_alarm(new_alarm: alarm.Alarm):
     current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     reminder_time = new_alarm.reminder_time.strftime('%Y-%m-%d %H:%M:%S')
     cursor, sql_client = sql_connect()
 
     query_template =  """INSERT INTO alarms (timestamp, reminder_time, message, channel, channel_id, guild_name, author_id, author_name) VALUES (\'{0}\',\'{1}\',\'{2}\',\'{3}\',{4},\'{5}\',{6},\'{7}\')"""
-    
-    query = query_template.format(current_time, reminder_time, new_alarm.message, new_alarm.channel, new_alarm.channel_id, new_alarm.guild_name, new_alarm.author_id, new_alarm.author_name)
+
+    query = query_template.format(current_time, reminder_time, new_alarm.message, new_alarm.channel, new_alarm.channel_id, new_alarm.guild_name.replace("\'"," "), new_alarm.author_id, new_alarm.author_name)
 
     try:
         cursor.execute(query)
@@ -56,3 +55,21 @@ def create_alarm(new_alarm: alarm):
     finally:
         cursor.close()
         sql_client.close()
+
+def get_next_alarm():
+    cursor, sql_client = sql_connect()
+    current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    
+    query = "SELECT TOP 1 * FROM alarms WHERE alarms.reminder_time > \'{0}\' ORDER BY alarms.reminder_time ASC".format(current_time)
+
+    try:
+        cursor.execute(query)
+        row = cursor.fetchone()
+        next_alarm = alarm.Alarm(row[2], row[3], row[4], row[5], row[6], row[7], row[8])
+    except pyodbc.Error as msg:
+        print(f"Error getting nest alarm: {msg}")
+    finally:
+        cursor.close()
+        sql_client.close()
+
+    return next_alarm
