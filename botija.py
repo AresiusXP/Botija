@@ -66,7 +66,7 @@ async def hello_chat(ctx):
 
 @bot.command(name="contribute", help="Prints the github address of the bot")
 async def contribute(ctx):
-    await ctx.send(f"Hey {ctx.message.author.name}, if you want to contribute I live here: https://github.com/AresiusXP/Botija.git"")
+    await ctx.send(f"Hey {ctx.message.author.name}, if you want to contribute I live here: https://github.com/AresiusXP/Botija.git")
     print(f"{ctx.message.author.name} wants to contribute")
 
 @bot.command(name="RemindMe", help="Creates a reminder. Uses UTC.\nSyntax:\n!RemindMe [int] [m|h|d|M|y] \"Message to record\"\n!RemindMe dd/mm/yyyy HH:MM\"Message to record\"")
