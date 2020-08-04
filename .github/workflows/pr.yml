@@ -1,0 +1,14 @@
+name: Build
+on:
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Bash for GitHub Actions
+      uses: jcblw/bash@1.0.0
+      args: "docker build ."
