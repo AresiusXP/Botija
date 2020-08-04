@@ -64,7 +64,7 @@ async def hello_chat(ctx):
     await ctx.send(f'Hello {ctx.message.author.name}!')
     print(f"{ctx.message.author.name} just said hello to me.")
 
-@bot.command(name="RemindMe", help="Creates a reminder.\nSyntax:\n!RemindMe [int] [m|h|d|M|y] \"Message to record\"\n!RemindMe dd/mm/yyyy HH:MM\"Message to record\"")
+@bot.command(name="RemindMe", help="Creates a reminder. Uses UTC.\nSyntax:\n!RemindMe [int] [m|h|d|M|y] \"Message to record\"\n!RemindMe dd/mm/yyyy HH:MM\"Message to record\"")
 async def remind_me(ctx, amount, time, *message):
     time_reg = re.compile("\d{2}:\d{2}$")
     date_reg = re.compile("\d{2}/\d{2}/\d{4}$")
@@ -80,7 +80,7 @@ async def remind_me(ctx, amount, time, *message):
 
     params = {}
     if time in mapping:
-        params[mapping[time]] = amount
+        params[mapping[time]] = int(amount)
         reminder_time = current_time + relativedelta(**params)
     elif (time_reg.match(time) is not None) and (date_reg.match(amount) is not None):
         reminder_time = datetime.strptime(amount + " " + time, "%d/%m/%Y %H:%M")
