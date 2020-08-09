@@ -15,6 +15,7 @@ load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 bot = commands.Bot(command_prefix='!')
 next_alarm = ""
+DRY_RUN = os.getenv('DRY_RUN')
 
 def trigger_alarm(*args):
     global next_alarm
@@ -58,6 +59,12 @@ async def on_ready():
 
     # Get next alarm
     set_signal_next_alarm()
+
+@bot.event
+async def on_member_join(member):
+    if member.guild.name == "Cacodemons":
+        default_channel = member.guild.text_channels[0]
+        await default_channel.send(file=discord.File('images/cacodemons.png'))
 
 @bot.event
 async def on_message(message):
@@ -144,6 +151,9 @@ async def remind_me(ctx, amount, time, *message):
         await ctx.send(f"Your reminder has been set for {reminder_format} with message \"{formatted_message}\"")
 
 if sql.test_sql_connection() == "success":
-    bot.run(TOKEN)
+    if int(DRY_RUN) != 1:
+        bot.run(TOKEN)
+    else: 
+        print("Dry run finished. No discord connection attempted.")
 else:
     print("Connection to SQL Failed.")
