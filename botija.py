@@ -151,7 +151,7 @@ async def remind_me(ctx, amount, time, *message):
         await ctx.send(f"Your reminder has been set for {reminder_format} with message \"{formatted_message}\"")
 
 if sql.test_sql_connection() == "success":
-    if int(DRY_RUN) != 1:
+    if DRY_RUN is None:
         bot.run(TOKEN)
     else: 
         print("Dry run finished. No discord connection attempted.")
