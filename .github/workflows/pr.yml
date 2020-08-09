@@ -8,9 +8,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-
-    - name: Bash for GitHub Actions
-      uses: jcblw/bash@1.0.0
-    
-    - name: Docker build && run
-      run: "docker build . -t botijatest && docker run -t botijatest -e DISCORD_TOKEN=${{secrets.DISCORDTESTTOKEN}} -e SQL_SERVER=botijasql.database.windows.net -e SQL_DB=BotijaDB -e SQL_USER=dbWSS -e SQL_PASS=${{secrets.SQLPASS}}"
+    - run: |
+      docker build . -t botijatest
+      docker run -t botijatest -e DISCORD_TOKEN=${{secrets.DISCORDTESTTOKEN}} -e SQL_SERVER=botijasql.database.windows.net -e SQL_DB=BotijaDB -e SQL_USER=dbWSS -e SQL_PASS=${{secrets.SQLPASS}}"

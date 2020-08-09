@@ -60,6 +60,12 @@ async def on_ready():
     set_signal_next_alarm()
 
 @bot.event
+async def on_member_join(member):
+    if member.guild.name == "Cacodemons":
+        default_channel = member.guild.text_channels[0]
+        await default_channel.send(file=discord.File('images/cacodemons.png'))
+
+@bot.event
 async def on_message(message):
     if message.author == bot.user:
         return
