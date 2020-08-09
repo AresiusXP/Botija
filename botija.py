@@ -76,6 +76,17 @@ async def on_message(message):
                     pepiline = re.sub(r'\@\w+', member.mention, pepiline)
         await message.channel.send(pepiline)
 
+@bot.command(name="pepi", help="Random Pepi ML line")
+async def pepi_cmd(ctx):
+    pepiline = str(sql.get_pepiline())
+    if "@" in pepiline:
+        members = ctx.message.channel.members
+        for member in members:
+            regex_str = re.search(r'\@\w+', pepiline).group(0)[1:]
+            if regex_str in str(member):
+                pepiline = re.sub(r'\@\w+', member.mention, pepiline)
+    await ctx.message.channel.send(pepiline)
+
 @bot.command(name="hello", help="It says hello back!")
 async def hello_chat(ctx):
     await ctx.send(f'Hello {ctx.message.author.name}!')
