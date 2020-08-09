@@ -5,6 +5,7 @@ import sql
 import asyncio
 import alarm
 import re
+import random
 from datetime import datetime,timedelta 
 from dateutil.relativedelta import relativedelta
 from discord.ext import commands
@@ -58,6 +59,22 @@ async def on_ready():
     # Get next alarm
     set_signal_next_alarm()
 
+@bot.event
+async def on_message(message):
+    if message.author == bot.user:
+        return
+    chance = 10
+    curr_random = random.randint(0,1000)
+    print(str(curr_random))
+    if chance > curr_random:
+        pepiline = str(sql.get_pepiline())
+        if "@" in pepiline:
+            members = message.channel.members
+            for member in members:
+                regex_str = re.search(r'\@\w+', pepiline).group(0)[1:]
+                if regex_str in str(member):
+                    pepiline = re.sub(r'\@\w+', member.mention, pepiline)
+        await message.channel.send(pepiline)
 
 @bot.command(name="hello", help="It says hello back!")
 async def hello_chat(ctx):
