@@ -65,7 +65,6 @@ async def on_message(message):
         return
     chance = 10
     curr_random = random.randint(0,1000)
-    print(str(curr_random))
     if chance > curr_random:
         pepiline = str(sql.get_pepiline())
         if "@" in pepiline:
@@ -75,6 +74,8 @@ async def on_message(message):
                 if regex_str in str(member):
                     pepiline = re.sub(r'\@\w+', member.mention, pepiline)
         await message.channel.send(pepiline)
+        
+    await bot.process_commands(message)
 
 @bot.command(name="pepi", help="Random Pepi ML line")
 async def pepi_cmd(ctx):
@@ -85,7 +86,7 @@ async def pepi_cmd(ctx):
             regex_str = re.search(r'\@\w+', pepiline).group(0)[1:]
             if regex_str in str(member):
                 pepiline = re.sub(r'\@\w+', member.mention, pepiline)
-    await ctx.message.channel.send(pepiline)
+    await ctx.send(pepiline)
 
 @bot.command(name="hello", help="It says hello back!")
 async def hello_chat(ctx):
