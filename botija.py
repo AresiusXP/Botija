@@ -64,7 +64,7 @@ async def on_ready():
 async def on_member_join(member):
     if member.guild.name == "Cacodemons":
         default_channel = member.guild.text_channels[0]
-        await default_channel.send(file=discord.File('images/cacodemons.png'))
+        await default_channel.send(content=f"Bienvenido {member.mention}!", file=discord.File('images/cacodemons.png'))
 
 @bot.event
 async def on_message(message):
