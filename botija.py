@@ -15,6 +15,7 @@ load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 bot = commands.Bot(command_prefix='!')
 next_alarm = ""
+DRY_RUN = os.getenv('DRY_RUN')
 
 def trigger_alarm(*args):
     global next_alarm
@@ -150,6 +151,9 @@ async def remind_me(ctx, amount, time, *message):
         await ctx.send(f"Your reminder has been set for {reminder_format} with message \"{formatted_message}\"")
 
 if sql.test_sql_connection() == "success":
-    bot.run(TOKEN)
+    if int(DRY_RUN) != 1:
+        bot.run(TOKEN)
+    else: 
+        print("Dry run finished. No discord connection attempted.")
 else:
     print("Connection to SQL Failed.")
