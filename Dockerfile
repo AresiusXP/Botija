@@ -16,9 +16,11 @@ RUN curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - && \
 
 # Create and copy files
 RUN mkdir /app
+RUN mkdir /app/images/
 WORKDIR /app
 
 COPY *.py /app/
+COPY images/* /app/images/
 COPY requirements.txt /app
 
 # Installing pip dependencies
