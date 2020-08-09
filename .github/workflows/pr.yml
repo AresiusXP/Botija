@@ -10,4 +10,4 @@ jobs:
     - uses: actions/checkout@v2
     - run: |
         docker build . -t botijatest
-        docker run --rm -e DISCORD_TOKEN=${{secrets.DISCORDTESTTOKEN}} -e SQL_SERVER=botijasql.database.windows.net -e SQL_DB=BotijaDB -e SQL_USER=dbWSS -e SQL_PASS=${{secrets.SQLPASS}} -e DRY_RUN=1-t botijatest
+        docker run --rm -e DISCORD_TOKEN=${{secrets.DISCORDTESTTOKEN}} -e SQL_SERVER=botijasql.database.windows.net -e SQL_DB=BotijaDB -e SQL_USER=dbWSS -e SQL_PASS=${{secrets.SQLPASS}} -e DRY_RUN=1 -t botijatest
