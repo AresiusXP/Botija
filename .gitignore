@@ -132,3 +132,5 @@ dmypy.json
 aci.yaml
 
 .idea/
+
+gpt*.txt

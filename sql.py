@@ -80,3 +80,43 @@ def test_sql_connection():
     finally:
         cursor.close()
         sql_client.close()
+
+def import_pepi(csv):
+    cursor, sql_client = sql_connect()
+    csv_file = open(csv)
+    try:
+        for l in csv_file:
+            now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            l = l.replace("'", "''")
+            query = "INSERT INTO pepi (timestamp, message) VALUES (\'{0}\',\'{1}\')".format(now, l[:-1])
+            print(query)
+            cursor.execute(query)
+            sql_client.commit()
+    except pyodbc.Error as msg:
+        print(f"Error inserting pepi line: {msg}")
+    finally:
+        cursor.close()
+        sql_client.close()
+        csv_file.close()
+
+def create_pepi_table():
+    cursor, sql_client = sql_connect()
+    try:
+        cursor.execute("""CREATE TABLE [dbo].[pepi]([id] [int] NOT NULL IDENTITY(1,1) PRIMARY KEY, [timestamp] [datetime] NOT NULL, [message] [varchar](200) NOT NULL) ON [PRIMARY]""")
+        sql_client.commit()
+    except pyodbc.Error as msg:
+        print(f"Error in command: {msg}")
+    finally:
+        cursor.close()
+        sql_client.close()
+
+def get_pepiline():
+    cursor, sql_client = sql_connect()
+    try:
+        cursor.execute("""SELECT TOP 1 message FROM pepi ORDER BY NEWID()""")
+        return cursor.fetchone()[0]
+    except pyodbc.Error as msg:
+        print(f"Error in command: {msg}")
+    finally:
+        cursor.close()
+        sql_client.close()
