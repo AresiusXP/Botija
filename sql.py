@@ -126,9 +126,8 @@ def get_line_mention(dbname, nick):
     cursor, sql_client = sql_connect()
     try:
         cursor.execute("""SELECT TOP 1 message FROM {0} WHERE message LIKE '%{1}%' ORDER BY NEWID()""".format(dbname, nick))
-        result = cursor.fetchone()[0]
-        if result is not None:
-            return result
+        if cursor.fetchone()[0] is not None:
+            return cursor.fetchone()[0]
         else: 
             return "Alto gil ese @{0}".format(nick)
     except pyodbc.Error as msg:
