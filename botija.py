@@ -70,23 +70,37 @@ async def on_member_join(member):
 async def on_message(message):
     if message.author == bot.user:
         return
-    chance = 10
-    curr_random = random.randint(0,1000)
-    if chance > curr_random:
-        pepiline = str(sql.get_pepiline())
-        if "@" in pepiline:
+    
+    #reply to mentions
+    if bot.user.mentioned_in(message) and message.mention_everyone is False:
+        ailine = str(sql.get_line("ailines"))
+        if "@" in ailine:
             members = message.channel.members
             for member in members:
-                regex_str = re.search(r'\@\w+', pepiline).group(0)[1:]
+                regex_str = re.search(r'\@\w+', ailine).group(0)[1:]
                 if regex_str in str(member):
-                    pepiline = re.sub(r'\@\w+', member.mention, pepiline)
-        await message.channel.send(pepiline)
+                    ailine = re.sub(r'\@\w+', member.mention, ailine)
+        await message.channel.send(ailine)
+
+    
+    #random line
+    chance = 50
+    curr_random = random.randint(0,1000)
+    if chance > curr_random:
+        ailine = str(sql.get_line("ailines"))
+        if "@" in ailine:
+            members = message.channel.members
+            for member in members:
+                regex_str = re.search(r'\@\w+', ailine).group(0)[1:]
+                if regex_str in str(member):
+                    ailine = re.sub(r'\@\w+', member.mention, ailine)
+        await message.channel.send(ailine)
         
     await bot.process_commands(message)
 
 @bot.command(name="pepi", help="Random Pepi ML line")
 async def pepi_cmd(ctx):
-    pepiline = str(sql.get_pepiline())
+    pepiline = str(sql.get_line("pepi"))
     if "@" in pepiline:
         members = ctx.message.channel.members
         for member in members:
