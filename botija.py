@@ -43,8 +43,7 @@ async def send_alarm_message(alarm_channel_id, alarm_author_id, alarm_message):
     member = bot.get_user(alarm_author_id)
     await channel.send(f"{member.mention} - Reminder: \"{alarm_message}\"")
 
-def format_ai_line(dbname, message):
-    ailine = str(sql.get_line(dbname))
+def format_ai_line(message, ailine):
     if "@" in ailine:
         members = message.channel.members
         for member in members:
@@ -79,27 +78,28 @@ async def on_member_join(member):
 
 @bot.event
 async def on_message(message):
-    if message.author == bot.user:
-        return
-    
-    #reply to mentions
-    if bot.user.mentioned_in(message) and message.mention_everyone is False:
-        ailine = format_ai_line("ailines", message)
-        await message.channel.send(ailine)
+    if message.author != bot.user:
+        #reply to mentions
+        if bot.user.mentioned_in(message) and message.mention_everyone is False:
+            if len(message.mentions) > 1:
+                member_nick = str(message.mentions[1]).split("#")[0]
+                ailine = format_ai_line(message, str(sql.get_line_mention("ailines", member_nick)))
+            else: 
+                ailine = format_ai_line(message, str(sql.get_line("ailines")))
+            await message.channel.send(ailine)
 
-    
-    #random line
-    chance = 25
-    curr_random = random.randint(0,1000)
-    if chance > curr_random:
-        ailine = format_ai_line("ailines", message)
-        await message.channel.send(ailine)
+        #random line
+        chance = 25
+        curr_random = random.randint(0,1000)
+        if chance > curr_random:
+            ailine = format_ai_line(message, str(sql.get_line("ailines")))
+            await message.channel.send(ailine)
         
     await bot.process_commands(message)
 
 @bot.command(name="pepi", help="Random Pepi ML line")
 async def pepi_cmd(ctx):
-    pepiline = format_ai_line("pepi", ctx.message)
+    pepiline = format_ai_line(ctx.message, str(sql.get_line("pepi")))
     await ctx.send(pepiline)
 
 @bot.command(name="hello", help="It says hello back!")

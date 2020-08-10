@@ -86,12 +86,13 @@ def import_lines(csv, dbname):
     csv_file = open(csv)
     try:
         for l in csv_file:
-            now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            l = l.replace("'", "''")
-            query = "INSERT INTO {0} (timestamp, message) VALUES (\'{1}\',\'{2}\')".format(dbname, now, l[:-1])
-            print(query)
-            cursor.execute(query)
-            sql_client.commit()
+            if len(l) < 300:
+                now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                l = l.replace("'", "''")
+                query = "INSERT INTO {0} (timestamp, message) VALUES (\'{1}\',\'{2}\')".format(dbname, now, l[:-1])
+                print(query)
+                cursor.execute(query)
+                sql_client.commit()
     except pyodbc.Error as msg:
         print(f"Error inserting pepi line: {msg}")
     finally:
@@ -102,7 +103,7 @@ def import_lines(csv, dbname):
 def create_lines_table(dbname):
     cursor, sql_client = sql_connect()
     try:
-        cursor.execute("""CREATE TABLE [dbo].[{0}]([id] [int] NOT NULL IDENTITY(1,1) PRIMARY KEY, [timestamp] [datetime] NOT NULL, [message] [varchar](200) NOT NULL) ON [PRIMARY]""".format(dbname))
+        cursor.execute("""CREATE TABLE [dbo].[{0}]([id] [int] NOT NULL IDENTITY(1,1) PRIMARY KEY, [timestamp] [datetime] NOT NULL, [message] text NOT NULL) ON [PRIMARY]""".format(dbname))
         sql_client.commit()
     except pyodbc.Error as msg:
         print(f"Error in command: {msg}")
@@ -114,6 +115,17 @@ def get_line(dbname):
     cursor, sql_client = sql_connect()
     try:
         cursor.execute("""SELECT TOP 1 message FROM {0} ORDER BY NEWID()""".format(dbname))
+        return cursor.fetchone()[0]
+    except pyodbc.Error as msg:
+        print(f"Error in command: {msg}")
+    finally:
+        cursor.close()
+        sql_client.close()
+
+def get_line_mention(dbname, nick):
+    cursor, sql_client = sql_connect()
+    try:
+        cursor.execute("""SELECT TOP 1 message FROM {0} WHERE message LIKE '%{1}%' ORDER BY NEWID()""".format(dbname, nick))
         return cursor.fetchone()[0]
     except pyodbc.Error as msg:
         print(f"Error in command: {msg}")
