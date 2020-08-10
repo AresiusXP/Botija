@@ -89,7 +89,7 @@ async def on_message(message):
 
     
     #random line
-    chance = 50
+    chance = 25
     curr_random = random.randint(0,1000)
     if chance > curr_random:
         ailine = format_ai_line("ailines", message)
