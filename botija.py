@@ -43,6 +43,17 @@ async def send_alarm_message(alarm_channel_id, alarm_author_id, alarm_message):
     member = bot.get_user(alarm_author_id)
     await channel.send(f"{member.mention} - Reminder: \"{alarm_message}\"")
 
+def format_ai_line(dbname, message):
+    ailine = str(sql.get_line(dbname))
+    if "@" in ailine:
+        members = message.channel.members
+        for member in members:
+            regex_str = re.search(r'\@\w+', ailine).group(0)[1:]
+            if regex_str in str(member):
+                ailine = re.sub(r'\@\w+', member.mention, ailine)
+    return ailine
+
+
 @bot.event
 async def on_ready():
     guild = discord.utils.get(bot.guilds)
@@ -73,13 +84,7 @@ async def on_message(message):
     
     #reply to mentions
     if bot.user.mentioned_in(message) and message.mention_everyone is False:
-        ailine = str(sql.get_line("ailines"))
-        if "@" in ailine:
-            members = message.channel.members
-            for member in members:
-                regex_str = re.search(r'\@\w+', ailine).group(0)[1:]
-                if regex_str in str(member):
-                    ailine = re.sub(r'\@\w+', member.mention, ailine)
+        ailine = format_ai_line("ailines", message)
         await message.channel.send(ailine)
 
     
@@ -87,26 +92,14 @@ async def on_message(message):
     chance = 50
     curr_random = random.randint(0,1000)
     if chance > curr_random:
-        ailine = str(sql.get_line("ailines"))
-        if "@" in ailine:
-            members = message.channel.members
-            for member in members:
-                regex_str = re.search(r'\@\w+', ailine).group(0)[1:]
-                if regex_str in str(member):
-                    ailine = re.sub(r'\@\w+', member.mention, ailine)
+        ailine = format_ai_line("ailines", message)
         await message.channel.send(ailine)
         
     await bot.process_commands(message)
 
 @bot.command(name="pepi", help="Random Pepi ML line")
 async def pepi_cmd(ctx):
-    pepiline = str(sql.get_line("pepi"))
-    if "@" in pepiline:
-        members = ctx.message.channel.members
-        for member in members:
-            regex_str = re.search(r'\@\w+', pepiline).group(0)[1:]
-            if regex_str in str(member):
-                pepiline = re.sub(r'\@\w+', member.mention, pepiline)
+    pepiline = format_ai_line("pepi", ctx.message)
     await ctx.send(pepiline)
 
 @bot.command(name="hello", help="It says hello back!")
