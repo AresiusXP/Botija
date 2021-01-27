@@ -89,9 +89,8 @@ async def on_message(message):
             await message.channel.send(ailine)
 
         #random line
-        chance = 25
-        curr_random = random.randint(0,1000)
-        if chance > curr_random:
+        chance = 11
+        if chance > random.randint(0,1000):
             ailine = format_ai_line(message, str(sql.get_line("ailines")))
             await message.channel.send(ailine)
         
